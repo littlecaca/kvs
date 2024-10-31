@@ -1,0 +1,3 @@
+[submodule "vendors/NtyCo"]
+	path = vendors/NtyCo
+	url = git@github.com:littlecaca/NtyCo.git
