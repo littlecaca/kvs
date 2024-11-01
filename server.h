@@ -2,8 +2,9 @@
 
 #include <stdio.h>
 
-#define BUFFER_LENGTH 4096
-#define CONNECTION_LENGTH 1024
+#define BUFFER_LENGTH (16 * 1024)
+#define CONNECTION_MIN_NUM 3
+#define CONNECTION_MAX_NUM (1024 * 1024)
 #define READY_LENFTH 1024
 #define PORT_NUM 1
 
@@ -37,23 +38,17 @@ typedef enum {
 // socket连接
 struct connection
 {
-    int fd;
-    char rbuffer[BUFFER_LENGTH];
-    char wbuffer[BUFFER_LENGTH];
-    int rlength;
-    int wlength;
 	EventHandler *handler;
 	int (*recv_callback)(int);
 	int (*send_callback)(int);
-    ConnectionState status;
 	void *private_data;
+    int fd;
+    int rlength;
+    int wlength;
+    ConnectionState status;
 	int last_errno;
+    char rbuffer[BUFFER_LENGTH];
+    char wbuffer[BUFFER_LENGTH];
 };
-
-int set_event(int fd, int event, int flag);
-
-void error_handling(const char *message);
-
-void log_error(const char *message);
 
 void server_start(int port, EventHandler *handler);
