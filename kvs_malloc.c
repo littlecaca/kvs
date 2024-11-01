@@ -25,3 +25,13 @@ void *ktrymalloc(size_t length)
     void *ret = malloc(length);
     return ret;
 }
+
+void kfree(void *pointer)
+{
+    if (pointer == NULL)
+    {
+        LOG_ERROR("try to free a null ptr");
+        return;
+    }
+    free(pointer);
+}

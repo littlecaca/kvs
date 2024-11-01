@@ -7,3 +7,6 @@ void *kmalloc(size_t length);
 
 // try allocating memory or return NULL if out of memory
 void *ktrymalloc(size_t length);
+
+// free memory
+void kfree(void *pointer);
