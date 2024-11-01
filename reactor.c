@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <sys/socket.h>
 #include <unistd.h>
@@ -14,22 +15,47 @@
 
 #include "server.h"
 #include "logger.h"
+#include "kvs_malloc.h"
 
-static connection conn_list[CONNECTION_LENGTH];
+static connection *conn_list;
+static size_t conn_len;
 static int epfd;
 static int client_cnt = 0;
 static struct timeval last_time = {};
 static EventHandler *event_handler;
 
-void error_handling(const char *message)
+static void error_handling(const char *message)
 {
     fprintf(stderr, "%s:%s\n", message, strerror(errno));   
     exit(1);
 }
 
-void log_error(const char *message)
+static void log_error(const char *message)
 {
     fprintf(stderr, "%s:%s\n", message, strerror(errno)); 
+}
+
+/**
+ * Extend connection list if necessay.
+ * @return -1, invalid fd; -2 conn_len has reach limit; -3 out of memory.
+ */
+static int try_prepare_list(int fd)
+{
+    if (fd < 0)
+        return -1;
+
+    while (fd >= conn_len)
+    {
+        if (conn_len * 2 > CONNECTION_MAX_NUM)
+            return -2;
+
+        connection *new_list = ktryrealloc(conn_list, conn_len * 2 * sizeof(connection));
+        if (new_list == NULL)  // oom
+            return -3;
+        conn_list = new_list;
+        conn_len *= 2;
+    }
+    return 0;
 }
 
 
@@ -125,19 +151,23 @@ int recv_cb(int fd)
     return 0;
 }
 
-int registerCallback(int fd, int flag)
+int registerFd(int fd, int flag)
 {
-    if (fd >= CONNECTION_LENGTH)
+    int ret = try_prepare_list(fd);
+    if (ret < 0)
     {
-        LOG_ERROR("Too many file descriptors");
-        return 1;
+        if (ret == -2)
+        {
+            LOG_ERROR("The connetion number has reach limit.");
+        }
+        return -1;
     }
+
     connection *pconn = conn_list + fd;
     memset(pconn, 0, sizeof (connection));
     pconn->fd = fd;
     pconn->send_callback = send_cb;
     pconn->handler = event_handler;
-
 
     if (flag)
     {
@@ -190,7 +220,7 @@ int accept_cb(int fd)
     {
         error_handling("accept() fails");
     }
-    registerCallback(clnt_fd, 0);
+    registerFd(clnt_fd, 0);
 
     if (++client_cnt % 1000 == 0)
     {
@@ -204,11 +234,27 @@ int accept_cb(int fd)
     return 0;
 }
 
+static inline void create_connection_list()
+{
+    assert(conn_list == NULL);
+    conn_list = kmalloc(sizeof(connection) * CONNECTION_MIN_NUM);
+    conn_len = CONNECTION_MIN_NUM;
+}
+
+static inline void destroy_connection_list()
+{
+    assert(conn_list != NULL);
+    kfree(conn_list);
+    conn_len = 0;
+}
+
 // server
 int reactor_start(int port, EventHandler *handler)
 {
     // ingore signal SIGPIPE
     signal(SIGPIPE, SIG_IGN);
+
+    create_connection_list();
 
     epfd = epoll_create1(0);
     event_handler = handler;
@@ -217,7 +263,7 @@ int reactor_start(int port, EventHandler *handler)
     for (int i = 0; i < PORT_NUM; ++i)
     {
         server_fd = init_listen(port + i);
-        registerCallback(server_fd, 1);
+        registerFd(server_fd, 1);
     }
 
     gettimeofday(&last_time, NULL);
@@ -248,6 +294,7 @@ int reactor_start(int port, EventHandler *handler)
         }
     }
     
+    destroy_connection_list();
     return 0;
 }
  
