@@ -2,11 +2,10 @@
 
 #include <stdlib.h>
 
-// allocate memory or abort if out of memory
 void *kmalloc(size_t length);
-
-// try allocating memory or return NULL if out of memory
 void *ktrymalloc(size_t length);
-
-// free memory
+void *kcalloc(size_t count, size_t length);
+void *ktrycalloc(size_t count, size_t length);
+void *krealloc(void *ptr, size_t length);
+void *ktryrealloc(void *ptr, size_t length);
 void kfree(void *pointer);
