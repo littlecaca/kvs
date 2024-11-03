@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 
 project(kvstore)
 
-option(DEBUG "debug or not" ON)
-option(TEST "enable test or not" ON)
-
-
+option(KVS_DEBUG "debug or not" ON)
+option(KVS_TEST_PRINT "print test info" OFF)
+option(KVS_TEST "enable test or not" ON)
 
 # =======================
 #  srcs, headers, or libs
@@ -16,7 +15,9 @@ kvs_protocol.c
 kvs_rbtree.c
 logger.c
 reactor.c
-server.c)
+server.c
+kvs_socket.c
+kvs_client.c)
 
 add_library(kvstore_base STATIC ${SRCS})
 
@@ -29,7 +30,7 @@ target_link_libraries(kvstore kvstore_base)
 # ====================
 #  debug
 # ====================
-if(DEBUG)
+if(KVS_DEBUG)
 add_compile_options(-g -O0)
 else()
 add_compile_definitions(NDEBUG)
@@ -38,14 +39,20 @@ endif()
 # ==================
 #  test
 # ==================
-if(TEST)
-enable_testing()
-add_subdirectory(test)
+if(KVS_TEST)
+    message(STATUS "open TEST")
+    enable_testing()
+    add_subdirectory(test)
+    add_subdirectory(integrated_test)
 endif()
 
-if(TEST)
-target_compile_definitions(kvstore_base PRIVATE KVS_TEST)
+if(KVS_TEST_PRINT)
+    message(STATUS "set KVS_TEST")
+    message(STATUS ${TEST_PRINT})
+    target_compile_definitions(kvstore_base PRIVATE KVS_TEST)
 endif()
+
+
 
 # ==================
 #  install

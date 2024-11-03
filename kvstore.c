@@ -10,8 +10,9 @@
 
 int kvs_request(connection *conn)
 {
+#ifdef KVS_TEST
     printf("read from client %d: %s\n", conn->fd, conn->rbuffer);
-    
+#endif
     int nwrite;
     kvs_deal_request(conn->rbuffer, conn->wbuffer, BUFFER_LENGTH, &nwrite);
     conn->wbuffer[nwrite] = 0;

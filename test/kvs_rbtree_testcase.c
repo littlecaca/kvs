@@ -8,7 +8,6 @@ void handle_node(rbtree_node *node)
 }
 
 int main() {
-
 	// int keyArray[20] = {24,25,13,35,23, 26,67,47,38,98, 20,19,17,49,12, 21,9,18,14,15};
     char *keyArray[8] = {"niko", "king", "darren", "viic", "naci", "taozi", "youzi", "lulu"};
     char *valueArray[8] = {"1niko", "2king", "3darren", "4viic", "5naci", 

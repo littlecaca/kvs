@@ -85,6 +85,18 @@ static int kvs_split_tokens(char *query, char **tokens)
         tokens[idx++] = token;
         token = strtok(NULL, " ");
     }
+
+    if (idx > 0)
+    {
+        for (char *it = tokens[idx - 1]; *it != 0; ++it)
+        {
+            if (*it == '\r' && *(it + 1) == '\n')
+            {
+                *it = 0;
+                break;
+            }
+        }
+    }
     return idx;
 }
 
@@ -126,7 +138,7 @@ int kvs_deal_request(char *query, char *response, size_t len, int *nwrite)
     printf("received tokens: ");
     for (int i = 0; i < token_num; ++i)
     {
-        printf("%d. %s ", i + 1, tokens[i]);
+        printf("%d.%s ", i + 1, tokens[i]);
     }
     printf("\n");
 #endif
@@ -189,9 +201,9 @@ int kvs_deal_request(char *query, char *response, size_t len, int *nwrite)
     case KVS_EXIST: {
         kvs_node_t *node = kvs_search(handler.engine, tokens[1]);
         if (node == handler.engine->nil)
-            *nwrite = snprintf(response, len - 1, "No\r\n");
+            *nwrite = snprintf(response, len - 1, "NO\r\n");
         else
-            *nwrite = snprintf(response, len - 1, "Yes\r\n");
+            *nwrite = snprintf(response, len - 1, "YES\r\n");
     }
         break;
     case KVS_DEL: {

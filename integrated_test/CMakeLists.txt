@@ -1,0 +1,4 @@
+add_executable(kvs_protocol_testcase kvs_protocol_testcase.c)
+target_link_libraries(kvs_protocol_testcase kvstore_base)
+install(TARGETS kvs_protocol_testcase
+DESTINATION bin/test)
