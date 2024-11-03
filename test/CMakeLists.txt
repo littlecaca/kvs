@@ -1,3 +1,3 @@
 add_executable(kvs_rbtree_testcase kvs_rbtree_testcase.c)
-target_link_libraries(kvs_rbtree_testcase PRIVATE kvstore)
+target_link_libraries(kvs_rbtree_testcase PRIVATE kvstore_base)
 add_test(NAME kvs_rbtree_testcase COMMAND kvs_rbtree_testcase)

@@ -19,8 +19,7 @@ int main() {
 	rbtree_node *node;
 	int i = 0;
 	for (i = 0;i < 8;i ++) {
-		node = rbtree_node_create(T, keyArray[i], valueArray[i]);
-		rbtree_insert(T, node);
+		rbtree_insert(T, keyArray[i], valueArray[i]);
 	}
 
 	rbtree_traversal(T, T->root, &handle_node);
@@ -37,4 +36,3 @@ int main() {
 
     rbtree_destroy(T);
 }
-
