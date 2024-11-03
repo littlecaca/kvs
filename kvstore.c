@@ -1,15 +1,21 @@
-#include "server.h"
+#include "kvstore.h"
 
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
+
+#include "server.h"
+#include "kvs_protocol.h"
+
 
 int kvs_request(connection *conn)
 {
     printf("read from client %d: %s\n", conn->fd, conn->rbuffer);
     
-    memcpy(conn->wbuffer, conn->rbuffer, conn->rlength);
-    conn->wlength = conn->rlength;
-
+    int nwrite;
+    kvs_deal_request(conn->rbuffer, conn->wbuffer, BUFFER_LENGTH, &nwrite);
+    conn->wbuffer[nwrite] = 0;
+    conn->wlength = nwrite;
     return 0;
 }
 
@@ -32,6 +38,7 @@ int main(int argc, char const *argv[])
         printf("usage: kvstore <port>\n");
         return 1;
     }
+    kvs_init_engine();
 
     int port = atoi(argv[1]);
 
