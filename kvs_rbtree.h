@@ -1,7 +1,7 @@
 #pragma once
 
-typedef char *KEY_TYPE;
-typedef char *VALUE_TYPE;
+typedef const char *KEY_TYPE;
+typedef const char *VALUE_TYPE;
 
 typedef struct _rbtree_node {
 	unsigned char color;
@@ -25,7 +25,8 @@ void rbtree_destroy(rbtree *T);
 rbtree_node *rbtree_mini(rbtree *T, rbtree_node *x);
 rbtree_node *rbtree_maxi(rbtree *T, rbtree_node *x);
 rbtree_node *rbtree_successor(rbtree *T, rbtree_node *x);
-void rbtree_insert(rbtree *T, rbtree_node *z);
+int rbtree_insert(rbtree *T, KEY_TYPE key, VALUE_TYPE value);
 void rbtree_delete(rbtree *T, rbtree_node *z);
 rbtree_node *rbtree_search(rbtree *T, KEY_TYPE key);
 void rbtree_traversal(rbtree *T, rbtree_node *node, node_handler_cb handler);
+int rbtree_modify(rbtree *T, KEY_TYPE key, VALUE_TYPE value);

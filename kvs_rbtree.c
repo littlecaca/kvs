@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "kvs_malloc.h"
 
@@ -18,8 +19,8 @@ static inline int key_cmp(KEY_TYPE left, KEY_TYPE right)
 /* Optional settings */
 static inline void node_kv_free(rbtree_node *pnode)
 {
-    if (!pnode->key) kfree(pnode->key);
-    if (!pnode->value) kfree(pnode->value);
+    if (!pnode->key) kfree((void *)pnode->key);
+    if (!pnode->value) kfree((void *)pnode->value);
     pnode->key = NULL;
     pnode->value = NULL;
 }
@@ -28,8 +29,8 @@ static inline void node_kv_free(rbtree_node *pnode)
 static inline KEY_TYPE key_cpy(KEY_TYPE key)
 {
     size_t len = strlen(key);
-    KEY_TYPE new_key = (KEY_TYPE)kmalloc(sizeof(char) * len + 1);
-    strncpy(new_key, key, len);
+    char *new_key = kmalloc(sizeof(char) * len + 1);
+    strncpy(new_key, key, len + 1);
     return new_key;
 }
 
@@ -37,9 +38,36 @@ static inline KEY_TYPE key_cpy(KEY_TYPE key)
 static inline VALUE_TYPE value_cpy(VALUE_TYPE value)
 {
     size_t len = strlen(value);
-    VALUE_TYPE new_key = (VALUE_TYPE)kmalloc(sizeof(char) * len + 1);
-    strncpy(new_key, value, len);
+    char *new_key = kmalloc(sizeof(char) * len + 1);
+    strncpy(new_key, value, len + 1);
     return new_key;
+}
+
+/* Optional settings */
+void value_replace(rbtree_node *node,  VALUE_TYPE value)
+{
+    assert(value != NULL);
+    if (node->value != value)
+    {
+        if (node->value) kfree((void *)node->value);
+        node->value = value_cpy(value);
+    }
+}
+
+/** 
+ * Modify the value of node with the key `key` to value.
+ * @return -1, invalid argument; -2, can not find the node;
+ * 0, ok.
+ */
+int rbtree_modify(rbtree *T, KEY_TYPE key, VALUE_TYPE value)
+{
+    if (value == NULL || key == NULL)
+        return -1;
+    rbtree_node *node = rbtree_search(T, key);
+    if (node == T->nil)
+        return -2;
+    value_replace(node, value);
+    return 0;
 }
 
 rbtree_node *rbtree_node_create(rbtree *T, KEY_TYPE key, VALUE_TYPE value)
@@ -199,8 +227,11 @@ static void rbtree_insert_fixup(rbtree *T, rbtree_node *z) {
 	T->root->color = BLACK;
 }
 
-
-void rbtree_insert(rbtree *T, rbtree_node *z) {
+/**
+ * @return -1, the key has been inserted. 0, OK.
+ */
+int rbtree_insert(rbtree *T, KEY_TYPE key, VALUE_TYPE value) {
+    rbtree_node *z = rbtree_node_create(T, key, value);
 
 	rbtree_node *y = T->nil;
 	rbtree_node *x = T->root;
@@ -213,7 +244,8 @@ void rbtree_insert(rbtree *T, rbtree_node *z) {
 		} else if (ret > 0) {
 			x = x->right;
 		} else { //Exist
-			return ;
+            kfree(z);
+			return -1;
 		}
 	}
 
@@ -226,11 +258,8 @@ void rbtree_insert(rbtree *T, rbtree_node *z) {
 		y->right = z;
 	}
 
-	z->left = T->nil;
-	z->right = T->nil;
-	z->color = RED;
-
 	rbtree_insert_fixup(T, z);
+    return 0;
 }
 
 static void rbtree_delete_fixup(rbtree *T, rbtree_node *x) {
