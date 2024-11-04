@@ -134,7 +134,7 @@ int kvs_deal_request(char *query, char *response, size_t len, int *nwrite)
         return -1;
     }
 
-#ifdef KVS_TEST
+#ifdef KVS_TEST_PRINT
     printf("received tokens: ");
     for (int i = 0; i < token_num; ++i)
     {

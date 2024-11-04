@@ -48,6 +48,6 @@ int main(int argc, char const *argv[])
     handler.close_handler = &kvs_close;
     handler.accept_handler = &kvs_accept;
 
-    server_start(port, &handler);
+    server_start(port, handler);
     return 0;
 }

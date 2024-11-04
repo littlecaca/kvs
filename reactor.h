@@ -2,4 +2,4 @@
 
 #include "server.h"
 
-int reactor_start(int port, EventHandler *handler);
+int reactor_start(int port, EventHandler handler);

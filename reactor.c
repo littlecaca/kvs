@@ -22,7 +22,7 @@ static size_t conn_len;
 static int epfd;
 static int client_cnt = 0;
 static struct timeval last_time = {};
-static EventHandler *event_handler;
+static EventHandler event_handler;
 
 static void error_handling(const char *message)
 {
@@ -167,7 +167,7 @@ int registerFd(int fd, int flag)
     memset(pconn, 0, sizeof (connection));
     pconn->fd = fd;
     pconn->send_callback = send_cb;
-    pconn->handler = event_handler;
+    pconn->handler = &event_handler;
 
     if (flag)
     {
@@ -249,7 +249,7 @@ static inline void destroy_connection_list()
 }
 
 // server
-int reactor_start(int port, EventHandler *handler)
+int reactor_start(int port, EventHandler handler)
 {
     // ingore signal SIGPIPE
     signal(SIGPIPE, SIG_IGN);

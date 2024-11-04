@@ -8,7 +8,10 @@
 #define READY_LENFTH 1024
 #define PORT_NUM 1
 
-#define NETWORK_REACTOR
+#define NETWORK_REACTOR 1
+#define NETWORK_NTYCO   2
+
+#define NETWORK_SELECT NETWORK_NTYCO
 
 typedef int (*RCallBack)(int fd);
 
@@ -51,4 +54,4 @@ struct connection
     char wbuffer[BUFFER_LENGTH];
 };
 
-void server_start(int port, EventHandler *handler);
+void server_start(int port, EventHandler handler);
