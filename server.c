@@ -21,6 +21,6 @@ void server_start(int port, EventHandler handler)
 #elif (NETWORK_SELECT == NETWORK_NTYCO)
     ntyco_start(port, &ntyco_handler);
 #else
-    static_assert("Must select a network engine");
+    static_assert(0, "Must select a network engine");
 #endif
 }

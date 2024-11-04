@@ -8,10 +8,9 @@
 #define READY_LENFTH 1024
 #define PORT_NUM 1
 
-#define NETWORK_REACTOR 1
-#define NETWORK_NTYCO   2
-
-#define NETWORK_SELECT NETWORK_NTYCO
+#define NETWORK_REACTOR 0
+#define NETWORK_NTYCO 1
+// #define NETWORK_SELECT NETWORK_REACTOR
 
 typedef int (*RCallBack)(int fd);
 

@@ -1,4 +1,6 @@
+
 #include "ntyco.h"
+#if (NETWORK_SELECT == NETWORK_NTYCO)
 
 #include <arpa/inet.h>
 
@@ -78,3 +80,5 @@ int ntyco_start(unsigned short port, msg_handler handler) {
 	nty_schedule_run();
     return 0;
 }
+
+#endif
