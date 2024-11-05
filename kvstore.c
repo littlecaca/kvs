@@ -49,5 +49,7 @@ int main(int argc, char const *argv[])
     handler.accept_handler = &kvs_accept;
 
     server_start(port, handler);
+
+    kvs_destroy_engine();
     return 0;
 }

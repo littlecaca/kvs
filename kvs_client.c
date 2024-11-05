@@ -39,3 +39,9 @@ int kvs_connect(const char *ip, unsigned short port)
 
     return sock_fd;
 }
+
+int kvs_close(int fd)
+{
+    close(fd);
+    return 0;
+}

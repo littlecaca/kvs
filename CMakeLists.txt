@@ -19,7 +19,8 @@ logger.c
 reactor.c
 server.c
 kvs_socket.c
-ntyco.c)
+ntyco.c
+kvs_hash.c)
 
 set(CLIENT_SRCS
 kvs_client.c
@@ -70,7 +71,6 @@ if(KVS_USE_NTYCO)
 else()
     message(STATUS "Use reactor as the network engine")
     target_compile_definitions(kvstore_base PUBLIC NETWORK_SELECT=NETWORK_REACTOR)
-
 endif()
 
 # ====================

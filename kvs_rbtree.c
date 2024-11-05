@@ -64,10 +64,17 @@ int rbtree_modify(rbtree *T, KEY_TYPE key, VALUE_TYPE value)
     if (value == NULL || key == NULL)
         return -1;
     rbtree_node *node = rbtree_search(T, key);
-    if (node == T->nil)
+    if (node == NULL)
         return -2;
     value_replace(node, value);
     return 0;
+}
+
+int rbtree_exist(rbtree *T, KEY_TYPE key)
+{
+	if (T == NULL || key == NULL)
+		return 0;
+	return rbtree_search(T, key) != NULL;
 }
 
 rbtree_node *rbtree_node_create(rbtree *T, KEY_TYPE key, VALUE_TYPE value)
@@ -386,7 +393,7 @@ rbtree_node *rbtree_search(rbtree *T, KEY_TYPE key) {
 			return node;
 		}	
 	}
-	return T->nil;
+	return NULL;
 }
 
 

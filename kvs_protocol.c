@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "kvs_rbtree.h"
+#include "kvs_hash.h"
 
 typedef enum _kvs_query_cmd_t
 {
@@ -42,8 +43,8 @@ const char *kvs_query_str[] =
 #define modify(type) JOIN(type, _modify)
 #define delete(type) JOIN(type, _delete)
 #define search(type) JOIN(type, _search)
-#define traversal(type) JOIN(type, _traversal)
 #define insert(type) JOIN(type, _insert)
+#define exist(type)   JOIN(type, _exist)
 
 #define kvs_node_t node_t(KVS_ENGINE)
 #define kvs_engine_t KVS_ENGINE
@@ -53,8 +54,8 @@ const char *kvs_query_str[] =
 #define kvs_modify(...) modify(KVS_ENGINE)(__VA_ARGS__)
 #define kvs_delete(...) delete(KVS_ENGINE)(__VA_ARGS__)
 #define kvs_search(...) search(KVS_ENGINE)(__VA_ARGS__)
-#define kvs_traversal(...) traversal(KVS_ENGINE)(__VA_ARGS__)
 #define kvs_insert(...) insert(KVS_ENGINE)(__VA_ARGS__)
+#define kvs_exist(...)  exist(KVS_ENGINE)(__VA_ARGS__)
 
 static struct _kvs_engine_handle
 {
@@ -66,6 +67,13 @@ void kvs_init_engine()
 {
     memset(&handler, 0, sizeof handler);
     handler.engine = kvs_create();
+}
+
+void kvs_destroy_engine()
+{
+    assert(handler.engine != NULL);
+    kvs_destroy(handler.engine);
+    handler.engine = NULL;
 }
 
 /**
@@ -169,7 +177,7 @@ int kvs_deal_request(char *query, char *response, size_t len, int *nwrite)
         break;
     case KVS_GET: {
         kvs_node_t *node = kvs_search(handler.engine, tokens[1]);
-        if (node == handler.engine->nil)
+        if (node == NULL)
         {
             *nwrite = snprintf(response, len - 1, "Not Found\r\n");
             return -2;
@@ -199,16 +207,15 @@ int kvs_deal_request(char *query, char *response, size_t len, int *nwrite)
     }
         break;
     case KVS_EXIST: {
-        kvs_node_t *node = kvs_search(handler.engine, tokens[1]);
-        if (node == handler.engine->nil)
-            *nwrite = snprintf(response, len - 1, "NO\r\n");
-        else
+        if (kvs_exist(handler.engine, tokens[1]))
             *nwrite = snprintf(response, len - 1, "YES\r\n");
+        else
+            *nwrite = snprintf(response, len - 1, "NO\r\n");
     }
         break;
     case KVS_DEL: {
         kvs_node_t *node = kvs_search(handler.engine, tokens[1]);
-        if (node == handler.engine->nil)
+        if (node == NULL)
         {
             *nwrite = snprintf(response, len - 1, "Not Found\r\n");
             return -2;
