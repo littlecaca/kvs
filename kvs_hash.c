@@ -200,20 +200,22 @@ int kvs_hash_count(kvs_hash *hash) {
 	return hash->count;
 }
 
-void kvs_hash_delete(kvs_hash *hash, kvs_hash_node *node) {
-	if (!hash || !node) return;
-
-    int idx = _hash(node->key, hash->buckets);
+/**
+ * @return -1, the key does not exist. 0, OK.
+ */
+int kvs_hash_delete(kvs_hash *hash, const char *key) {
+    assert(key != NULL);
+    int idx = _hash(key, hash->buckets);
 
     kvs_hash_node *cur = hash->nodes[idx];
     kvs_hash_node *last = NULL;
-    while (cur != NULL && cur != node)
+    while (cur != NULL && strcmp(cur->key, key) != 0)
     {
         last = cur;
         cur = cur->next;
     }
 
-    if (cur == node)
+    if (cur != NULL)
     {
         if (last == NULL)
             hash->nodes[idx] = cur->next;
@@ -221,7 +223,10 @@ void kvs_hash_delete(kvs_hash *hash, kvs_hash_node *node) {
             last->next = cur->next;
         _destroy_node(cur);
         --hash->count;
+        return 0;
     }
+    
+    return -1;
 }
 
 int kvs_hash_exist(kvs_hash *hash, const char *key) {

@@ -24,7 +24,7 @@ int main() {
     assert(value1 != NULL);
 	printf("Teacher2 : %s\n", value1->value);
 
-	kvs_hash_delete(engine, value1);
+	kvs_hash_delete(engine, "Teacher2");
 
 	ret = kvs_hash_exist(engine, "Teacher2");
     assert(ret == 0);

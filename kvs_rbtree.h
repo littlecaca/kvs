@@ -22,7 +22,7 @@ typedef void (*node_handler_cb)(rbtree_node *);
 rbtree *rbtree_create();
 void rbtree_destroy(rbtree *T);
 int rbtree_insert(rbtree *T, KEY_TYPE key, VALUE_TYPE value);
-void rbtree_delete(rbtree *T, rbtree_node *z);
+int rbtree_delete(rbtree *T, KEY_TYPE z);
 rbtree_node *rbtree_search(rbtree *T, KEY_TYPE key);
 int rbtree_modify(rbtree *T, KEY_TYPE key, VALUE_TYPE value);
 int rbtree_exist(rbtree *T, KEY_TYPE key);

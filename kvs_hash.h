@@ -18,5 +18,5 @@ void kvs_hash_destroy(kvs_hash *hash);
 int kvs_hash_insert(kvs_hash *hash, const char *key, const char *value);
 kvs_hash_node *kvs_hash_search(kvs_hash *hash, const char *key);
 int kvs_hash_modify(kvs_hash *hash, const char *key, const char *value);
-void kvs_hash_delete(kvs_hash *hash, kvs_hash_node *node);
+int kvs_hash_delete(kvs_hash *hash, const char *key);
 int kvs_hash_exist(kvs_hash *hash, const char *key);

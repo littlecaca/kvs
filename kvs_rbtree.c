@@ -82,7 +82,7 @@ rbtree_node *rbtree_node_create(rbtree *T, KEY_TYPE key, VALUE_TYPE value)
     rbtree_node *node = kmalloc(sizeof(rbtree_node));
     node->color = RED;
     node->key = key_cpy(key);
-    node->value = key_cpy(value);
+    node->value = value_cpy(value);
     node->left = T->nil;
     node->right = T->nil;
     return node;
@@ -339,7 +339,13 @@ static void rbtree_delete_fixup(rbtree *T, rbtree_node *x) {
 	x->color = BLACK;
 }
 
-void rbtree_delete(rbtree *T, rbtree_node *z) {
+/**
+ * @return -1, the key does not exist. 0, OK.
+ */
+int rbtree_delete(rbtree *T, KEY_TYPE key) 
+{
+	rbtree_node *z = rbtree_search(T, key);
+	if (z == NULL) return -1;
 
 	rbtree_node *y = T->nil;
     (void)y;
@@ -378,6 +384,8 @@ void rbtree_delete(rbtree *T, rbtree_node *z) {
 	}
 
     kfree(y);
+	
+	return 0;
 }
 
 rbtree_node *rbtree_search(rbtree *T, KEY_TYPE key) {

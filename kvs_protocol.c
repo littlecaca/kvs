@@ -6,6 +6,7 @@
 
 #include "kvs_rbtree.h"
 #include "kvs_hash.h"
+#include "kvs_skiptalist.h"
 
 typedef enum _kvs_query_cmd_t
 {
@@ -214,13 +215,12 @@ int kvs_deal_request(char *query, char *response, size_t len, int *nwrite)
     }
         break;
     case KVS_DEL: {
-        kvs_node_t *node = kvs_search(handler.engine, tokens[1]);
-        if (node == NULL)
+        int ret = kvs_delete(handler.engine, tokens[1]);
+        if (ret == -1)
         {
             *nwrite = snprintf(response, len - 1, "Not Found\r\n");
             return -2;
         }
-        kvs_delete(handler.engine, node);
         *nwrite = snprintf(response, len - 1, "OK\r\n");
     }
         break;

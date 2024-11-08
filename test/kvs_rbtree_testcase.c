@@ -25,9 +25,7 @@ int main() {
 	printf("----------------------------------------\n");
 
 	for (i = 0;i < 8;i ++) {
-
-		rbtree_node *node = rbtree_search(T, keyArray[i]);
-		rbtree_delete(T, node);
+		rbtree_delete(T, keyArray[i]);
 
 		rbtree_traversal(T, T->root, &handle_node);
 		printf("----------------------------------------\n");

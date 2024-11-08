@@ -8,9 +8,21 @@ option(KVS_TEST "enable test or not" ON)
 # use the reactor as the network engine defaultly
 option(KVS_USE_NTYCO "use the ntyco newwork engine" OFF)
 
+# ====================
+#  debug
+# ====================
+if(KVS_DEBUG)
+    message(STATUS "open debug mode")
+    add_compile_options(-g -O0)
+else()
+    add_compile_definitions(NDEBUG)
+endif()
+
 # =======================
 #  srcs, headers, or libs
 # ========================
+add_compile_definitions(__USE_MISC)
+
 set(BASE_SRCS
 kvs_malloc.c
 kvs_protocol.c
@@ -20,7 +32,8 @@ reactor.c
 server.c
 kvs_socket.c
 ntyco.c
-kvs_hash.c)
+kvs_hash.c
+kvs_skiplist.c)
 
 set(CLIENT_SRCS
 kvs_client.c
@@ -71,15 +84,6 @@ if(KVS_USE_NTYCO)
 else()
     message(STATUS "Use reactor as the network engine")
     target_compile_definitions(kvstore_base PUBLIC NETWORK_SELECT=NETWORK_REACTOR)
-endif()
-
-# ====================
-#  debug
-# ====================
-if(KVS_DEBUG)
-add_compile_options(-g -O0)
-else()
-add_compile_definitions(NDEBUG)
 endif()
 
 # ==================

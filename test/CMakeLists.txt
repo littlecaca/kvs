@@ -6,3 +6,6 @@ add_executable(kvs_hash_testcase kvs_hash_testcase.c)
 target_link_libraries(kvs_hash_testcase PRIVATE kvstore_base)
 add_test(NAME kvs_hash_testcase COMMAND kvs_hash_testcase)
 
+add_executable(kvs_skiplist_testcase kvs_skiplist_testcase.c)
+target_link_libraries(kvs_skiplist_testcase PRIVATE kvstore_base)
+add_test(NAME kvs_skiplist_testcase COMMAND kvs_skiplist_testcase)

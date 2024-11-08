@@ -6,9 +6,9 @@
 
 #define KVS_RBTREE rbtree
 #define KVS_HASH kvs_hash
-#define KVS_SKIP_LIST skip_list
+#define KVS_SKIP_LIST skiplist
 
-#define KVS_ENGINE KVS_HASH
+#define KVS_ENGINE KVS_SKIP_LIST
 
 
 void kvs_init_engine();
